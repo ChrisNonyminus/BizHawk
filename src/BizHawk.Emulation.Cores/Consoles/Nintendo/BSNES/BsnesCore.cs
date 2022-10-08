@@ -11,7 +11,6 @@ using BizHawk.Emulation.Cores.Nintendo.SNES;
 namespace BizHawk.Emulation.Cores.Nintendo.BSNES
 {
 	[PortedCore(CoreNames.Bsnes115, "bsnes team", "v115+", "https://github.com/bsnes-emu/bsnes")]
-	[ServiceNotApplicable(new[] { typeof(IDriveLight) })]
 	public unsafe partial class BsnesCore : IEmulator, IDebuggable, IVideoProvider, ISaveRam, IStatable, IInputPollable, IRegionable, ISettable<BsnesCore.SnesSettings, BsnesCore.SnesSyncSettings>, IBSNESForGfxDebugger
 	{
 		[CoreConstructor(VSystemID.Raw.SGB)]

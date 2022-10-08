@@ -10,7 +10,6 @@ using BizHawk.Emulation.Common;
 namespace BizHawk.Emulation.Cores.Libretro
 {
 	[PortedCore(CoreNames.Libretro, "CasualPokePlayer", singleInstance: true, isReleased: false)]
-	[ServiceNotApplicable(new[] { typeof(IDriveLight) })]
 	public partial class LibretroEmulator : IEmulator
 	{
 		private static readonly LibretroBridge bridge;
