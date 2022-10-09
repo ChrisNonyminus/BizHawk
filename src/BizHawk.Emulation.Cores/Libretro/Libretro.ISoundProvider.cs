@@ -70,7 +70,7 @@ namespace BizHawk.Emulation.Cores.Libretro
 			_blipR.ReadSamplesRight(_outSampBuf, _outSamps);
 		}
 
-		public void GetSamplesSync(out short[] samples, out int nsamp)
+		public void GetSyncSoundSamples(out short[] samples, out int nsamp)
 		{
 			nsamp = _outSamps;
 			samples = _outSampBuf;

@@ -25,7 +25,7 @@ namespace BizHawk.Emulation.Cores.Arcades.MAME
 		 * Whenever Hawk wants new audio, I dequeue it, while preserving the
 		 * fractinal part of the sample count, to use it later.
 		 */
-		public void GetSamplesSync(out short[] samples, out int nsamp)
+		public void GetSyncSoundSamples(out short[] samples, out int nsamp)
 		{
 			long nSampNumerator = _sampleRate * (long)VsyncDenominator + _soundRemainder;
 			nsamp = (int)(nSampNumerator / VsyncNumerator);			
