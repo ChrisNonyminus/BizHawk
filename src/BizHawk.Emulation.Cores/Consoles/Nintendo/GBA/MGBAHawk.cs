@@ -7,9 +7,9 @@ using BizHawk.Emulation.Common;
 namespace BizHawk.Emulation.Cores.Nintendo.GBA
 {
 	[PortedCore(CoreNames.Mgba, "endrift", "0.9.1", "https://mgba.io/")]
-	public partial class MGBAHawk : IEmulator, IVideoProvider, ISoundProvider, IGBAGPUViewable,
-		ISaveRam, IStatable, IInputPollable, ISettable<MGBAHawk.Settings, MGBAHawk.SyncSettings>,
-		IDebuggable
+	public partial class MGBAHawk : IEmulator,
+		IDebuggable, IInputPollable, ISaveRam, ISettable<MGBAHawk.Settings, MGBAHawk.SyncSettings>, IStatable, ISyncSoundProvider, IVideoProvider,
+		IGBAGPUViewable
 	{
 		private static readonly LibmGBA LibmGBA;
 		public static LibmGBA ZZHacky => LibmGBA;

@@ -84,7 +84,8 @@ using System.Collections.Generic;
 namespace BizHawk.Emulation.Cores.Arcades.MAME
 {
 	[PortedCore(CoreNames.MAME, "MAMEDev", "0.231", "https://github.com/mamedev/mame.git", isReleased: false)]
-	public partial class MAME : IEmulator, IVideoProvider, ISoundProvider, ISettable<object, MAME.MAMESyncSettings>, IStatable, IInputPollable
+	public partial class MAME : IEmulator,
+		IInputPollable, ISettable<object, MAME.MAMESyncSettings>, IStatable, ISyncSoundProvider, IVideoProvider
 	{
 		public MAME(string dir, string file, MAME.MAMESyncSettings syncSettings, out string gamename)
 		{

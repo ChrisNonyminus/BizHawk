@@ -5,22 +5,11 @@ using BizHawk.Emulation.Common;
 
 namespace BizHawk.Emulation.Cores.Arcades.MAME
 {
-	public partial class MAME : ISoundProvider
+	public partial class MAME : ISyncSoundProvider
 	{
-		public bool CanProvideAsync => false;
-		public SyncSoundMode SyncMode => SyncSoundMode.Sync;
-
 		private readonly Queue<short> _audioSamples = new Queue<short>();
 		private readonly int _sampleRate = 44100;
 		private long _soundRemainder = 0;
-
-		public void SetSyncMode(SyncSoundMode mode)
-		{
-			if (mode == SyncSoundMode.Async)
-			{
-				throw new NotSupportedException("Async mode is not supported.");
-			}
-		}
 
 		/*
 		 * GetSamplesSync() and MAME
@@ -54,11 +43,6 @@ namespace BizHawk.Emulation.Cores.Arcades.MAME
 					samples[i] = 0;
 				}
 			}
-		}
-
-		public void GetSamplesAsync(short[] samples)
-		{
-			throw new InvalidOperationException("Async mode is not supported.");
 		}
 
 		public void DiscardSamples()

@@ -99,7 +99,7 @@ namespace BizHawk.Emulation.Cores.Nintendo.SNES
 
 			// start up audio resampler
 			InitAudio();
-			ser.Register<ISoundProvider>(_resampler);
+			ser.Register<ISyncSoundProvider>(_resampler);
 
 			// strip header
 			if ((romData?.Length & 0x7FFF) == 512)
