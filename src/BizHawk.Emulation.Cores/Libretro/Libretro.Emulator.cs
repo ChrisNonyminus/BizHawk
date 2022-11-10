@@ -71,6 +71,9 @@ namespace BizHawk.Emulation.Cores.Libretro
 				var CoreDirectory = RetroString(Path.GetDirectoryName(corePath));
 				var CoreAssetsDirectory = RetroString(Path.GetDirectoryName(corePath));
 
+				Directory.CreateDirectory(Comm.CoreFileProvider.GetRetroSystemPath(game));
+				Directory.CreateDirectory(Comm.CoreFileProvider.GetRetroSaveRAMDirectory(game));
+
 				bridge.LibretroBridge_SetDirectories(cbHandler, SystemDirectory, SaveDirectory, CoreDirectory, CoreAssetsDirectory);
 
 				ControllerDefinition = ControllerDef;
@@ -292,10 +295,14 @@ namespace BizHawk.Emulation.Cores.Libretro
 			public LibretroControllerDef()
 				: base(name: "LibRetro Controls"/*for compatibility*/)
 			{
-				for (var player = 1; player <= 2; player++) foreach (var button in new[] { "Up", "Down", "Left", "Right", "Select", "Start", "Y", "B", "X", "A", "L", "R" })
+				for (var player = 1; player <= 2; player++) foreach (var button in new[] { "Up", "Down", "Left", "Right", "Select", "Start", "Y", "B", "X", "A", "L", "R", "L2", "R2", "L3", "R3" })
 				{
 					BoolButtons.Add($"P{player} {PFX_RETROPAD}{button}");
 				}
+				this.AddXYPair("P1 RetroPad LStick {0}", AxisPairOrientation.RightAndUp, (-32767).RangeTo(32767), 0);
+				this.AddXYPair("P1 RetroPad RStick {0}", AxisPairOrientation.RightAndUp, (-32767).RangeTo(32767), 0);
+				this.AddXYPair("P2 RetroPad LStick {0}", AxisPairOrientation.RightAndUp, (-32767).RangeTo(32767), 0);
+				this.AddXYPair("P2 RetroPad RStick {0}", AxisPairOrientation.RightAndUp, (-32767).RangeTo(32767), 0);
 
 				BoolButtons.Add("Pointer Pressed");
 				this.AddXYPair("Pointer {0}", AxisPairOrientation.RightAndUp, (-32767).RangeTo(32767), 0);

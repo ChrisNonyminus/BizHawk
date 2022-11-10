@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices;
 using BizHawk.Emulation.Common;
 
 namespace BizHawk.Emulation.Cores.Libretro
@@ -27,6 +27,18 @@ namespace BizHawk.Emulation.Cores.Libretro
 						_saveramAreas.Add(d);
 						_saveramSize += d.Size;
 					}
+				}
+			}
+
+			for (uint i = 0; i < bridge.LibretroBridge_GetNumMemDescs(); i++)
+			{
+				var mem = bridge.LibretroBridge_GetMemDescPtr(i);
+				var sz = (long)bridge.LibretroBridge_GetMemDescSize(i);
+				var name = bridge.LibretroBridge_GetMemDescName(i);
+				if (mem != IntPtr.Zero && sz > 0)
+				{
+					var d = new MemoryDomainIntPtr(name != IntPtr.Zero ? Marshal.PtrToStringAuto(name) : $"Domain{i}", bridge.LibretroBridge_IsMdescBigEndian(i) ? MemoryDomain.Endian.Big : MemoryDomain.Endian.Little, mem, sz, true, 1);
+					_memoryDomains.Add(d);
 				}
 			}
 

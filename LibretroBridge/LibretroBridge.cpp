@@ -88,6 +88,37 @@ public:
 		std::fflush(stdout);
 	}
 
+	u32 GetNumMemoryDescs()
+	{
+		return memory_map->num_descriptors;
+	}
+
+	void* GetMemoryDescPtr(u32 id)
+	{
+		return memory_map->descriptors[id].ptr;
+	}
+
+	u64 GetMemoryDescSize(u32 id)
+	{
+		return memory_map->descriptors[id].len;
+	}
+
+	const char* GetMemoryDescName(u32 id)
+	{
+		const char* addrspacename = memory_map->descriptors[id].addrspace;
+		if (addrspacename != nullptr)
+			return addrspacename;
+		char name[1024];
+		const char* ramtype = memory_map->descriptors[id].flags & RETRO_MEMDESC_SYSTEM_RAM ? "SYSTEMRAM": (memory_map->descriptors[id].flags & RETRO_MEMDESC_VIDEO_RAM ? "VIDEORAM" : (memory_map->descriptors[id].flags & RETRO_MEMDESC_SAVE_RAM ? "SAVERAM" : ""));
+		sprintf(name, "%s_%zX", ramtype, memory_map->descriptors[id].start);
+		return name;
+	}
+
+	boolean IsMemoryDescBigEndian(u32 id)
+	{
+		return memory_map->descriptors[id].flags & RETRO_MEMDESC_BIGENDIAN;
+	}
+
 	boolean RetroEnvironment(u32 cmd, void* data) {
 		switch (static_cast<RETRO_ENVIRONMENT>(cmd)) {
 			case RETRO_ENVIRONMENT::SET_ROTATION:
@@ -276,6 +307,18 @@ public:
 			case RETRO_ENVIRONMENT::GET_LANGUAGE:
 				*static_cast<RETRO_LANGUAGE*>(data) = RETRO_LANGUAGE::ENGLISH;
 				return true;
+			case RETRO_ENVIRONMENT::SET_MEMORY_MAPS:
+				{
+					auto _memory_map = static_cast<const struct retro_memory_map*>(data);
+					memory_map = new retro_memory_map;
+					memory_map->num_descriptors = _memory_map->num_descriptors;
+					memory_map->descriptors = new retro_memory_descriptor[memory_map->num_descriptors];
+					for (size_t i = 0; i < memory_map->num_descriptors; i++)
+					{
+						memory_map->descriptors[i] = _memory_map->descriptors[i];
+					}
+					return true;
+				}
 			default:
 				return false;
 		}
@@ -432,14 +475,21 @@ public:
 		// this is useless
 	}
 
-	s16 RetroInputState(u32 port, u32 device, __attribute__((unused)) u32 index, u32 id) {
+	s16 RetroInputState(u32 port, u32 device, u32 index, u32 id) {
 		assert(device < static_cast<u32>(RETRO_DEVICE::LAST));
 		switch (static_cast<RETRO_DEVICE>(device)) {
 			case RETRO_DEVICE::NONE:
 				return 0;
 			case RETRO_DEVICE::JOYPAD:
 				if (port < 2) {
-					assert(id < sizeof (joypads[port]));
+					if (id > sizeof (joypads[port]))
+					{
+						// it's analog
+						
+						int realindex  = (id >= 18 ? 1 : 0);
+						int realid     = (id & 1 ? 1 : 0);
+						return analog[realindex][realid];
+					}
 					return joypads[port][id];
 				}
 				return 0; // todo: is this valid?
@@ -454,7 +504,7 @@ public:
 				return lightGun[id];
 			case RETRO_DEVICE::ANALOG:
 				assert(id < sizeof (analog));
-				return analog[id];
+				return analog[index][id];
 			case RETRO_DEVICE::POINTER:
 				assert(id < sizeof (pointer));
 				return pointer[id];
@@ -528,7 +578,7 @@ public:
 		this->sampleBuf.clear();
 	}
 
-	void SetInput(RETRO_DEVICE device, u32 port, s16* input) {
+	void SetInput(RETRO_DEVICE device, u32 port, u32 index, s16* input) {
 		switch (device) {
 			case RETRO_DEVICE::NONE:
 				break;
@@ -546,7 +596,7 @@ public:
 				std::memcpy(lightGun, input, sizeof (lightGun));
 				break;
 			case RETRO_DEVICE::ANALOG:
-				std::memcpy(analog, input, sizeof (analog));
+				std::memcpy(analog[index], input, sizeof (analog[index]));
 				break;
 			case RETRO_DEVICE::POINTER:
 				std::memcpy(pointer, input, sizeof (pointer));
@@ -598,8 +648,10 @@ private:
 	s16 mouse[static_cast<u32>(RETRO_DEVICE_ID_MOUSE::LAST)];
 	s16 keyboard[static_cast<u32>(RETRO_KEY::LAST)];
 	s16 lightGun[static_cast<u32>(RETRO_DEVICE_ID_LIGHTGUN::LAST)];
-	s16 analog[static_cast<u32>(RETRO_DEVICE_ID_ANALOG::LAST)];
+	s16 analog[2][static_cast<u32>(RETRO_DEVICE_ID_ANALOG::LAST)];
 	s16 pointer[static_cast<u32>(RETRO_DEVICE_ID_POINTER::LAST)];
+
+	retro_memory_map* memory_map;
 };
 
 static CallbackHandler * gCbHandler = nullptr;
@@ -617,6 +669,26 @@ EXPORT void LibretroBridge_DestroyCallbackHandler(CallbackHandler* cbHandler) {
 	}
 
 	delete cbHandler;
+}
+
+EXPORT u32 LibretroBridge_GetNumMemDescs() {
+	return gCbHandler->GetNumMemoryDescs();
+}
+
+EXPORT void* LibretroBridge_GetMemDescPtr(u32 id) {
+	return gCbHandler->GetMemoryDescPtr(id);
+}
+
+EXPORT u64 LibretroBridge_GetMemDescSize(u32 id) {
+	return gCbHandler->GetMemoryDescSize(id);
+}
+
+EXPORT const char* LibretroBridge_GetMemDescName(u32 id) {
+	return gCbHandler->GetMemoryDescName(id);
+}
+
+EXPORT bool LibretroBridge_IsMdescBigEndian(u32 id) {
+	return gCbHandler->IsMemoryDescBigEndian(id);
 }
 
 // set a "global" callback handler
@@ -678,8 +750,8 @@ EXPORT void LibretroBridge_GetAudio(CallbackHandler* cbHandler, u32* numSamples,
 
 // set input for specific device and port
 // input is expected to be sent through an array of signed 16 bit integers, the positions of input in this array defined by RETRO_DEVICE_ID_* or RETRO_KEY
-EXPORT void LibretroBridge_SetInput(CallbackHandler* cbHandler, RETRO_DEVICE device, u32 port, s16* input) {
-	cbHandler->SetInput(device, port, input);
+EXPORT void LibretroBridge_SetInput(CallbackHandler* cbHandler, RETRO_DEVICE device, u32 index, u32 port, s16* input) {
+	cbHandler->SetInput(device, port, index, input);
 }
 
 // retro callbacks

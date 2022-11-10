@@ -1,10 +1,10 @@
 {
 	"AllTrollers": {
 		"LibRetro Controls": {
-			"P1 RetroPad Up": "Up, J1 POV1U, X1 DpadUp, X1 LStickUp",
-			"P1 RetroPad Down": "Down, J1 POV1D, X1 DpadDown, X1 LStickDown",
-			"P1 RetroPad Left": "Left, J1 POV1L, X1 DpadLeft, X1 LStickLeft",
-			"P1 RetroPad Right": "Right, J1 POV1R, X1 DpadRight, X1 LStickRight",
+			"P1 RetroPad Up": "Up, J1 POV1U, X1 DpadUp",
+			"P1 RetroPad Down": "Down, J1 POV1D, X1 DpadDown",
+			"P1 RetroPad Left": "Left, J1 POV1L, X1 DpadLeft",
+			"P1 RetroPad Right": "Right, J1 POV1R, X1 DpadRight",
 			"P1 RetroPad Select": "Space, J1 B9, X1 Back",
 			"P1 RetroPad Start": "Enter, J1 B10, X1 Start",
 			"P1 RetroPad Y": "A, J1 B1, X1 X",
@@ -13,6 +13,10 @@
 			"P1 RetroPad A": "X, J1 B3, X1 B",
 			"P1 RetroPad L": "W, J1 B5, X1 LeftShoulder",
 			"P1 RetroPad R": "E, J1 B6, X1 RightShoulder",
+			"P1 RetroPad L2": "X1 LeftTrigger, E",
+			"P1 RetroPad R2": "X1 RightTrigger, R",
+			"P1 RetroPad L3": "X1 LeftThumb, T",
+			"P1 RetroPad R3": "X1 RightThumb, Y",
 			"Pointer Pressed": "WMouse L",
 			"Key Backspace": "Backspace",
 			"Key Tab": "Tab",
@@ -1273,6 +1277,28 @@
 			},
 			"P1 Pointer Y": {
 				"Value": "",
+				"Mult": 1.0,
+				"Deadzone": 0.1
+			},
+			
+			
+			"P1 RetroPad LStick X": {
+				"Value": "X1 LeftThumbX Axis",
+				"Mult": 1.0,
+				"Deadzone": 0.1
+			},
+			"P1 RetroPad LStick Y": {
+				"Value": "X1 LeftThumbY Axis",
+				"Mult": 1.0,
+				"Deadzone": 0.1
+			},
+			"P1 RetroPad RStick X": {
+				"Value": "X1 RightThumbX Axis",
+				"Mult": 1.0,
+				"Deadzone": 0.1
+			},
+			"P1 RetroPad RStick Y": {
+				"Value": "X1 RightThumbY Axis",
 				"Mult": 1.0,
 				"Deadzone": 0.1
 			}

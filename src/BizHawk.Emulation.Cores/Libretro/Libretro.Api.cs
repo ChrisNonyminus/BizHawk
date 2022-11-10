@@ -261,6 +261,14 @@ namespace BizHawk.Emulation.Cores.Libretro
 			R2 = 13,
 			L3 = 14,
 			R3 = 15,
+			//LeftThumbUp = 19, /* Left Analog Up */
+			//LeftThumbDown = 18, /* Left Analog Down */
+			//LeftThumbLeft = 17, /* Left Analog Left */
+			//LeftThumbRight = 16, /* Left Analog Right */
+			//RightThumbUp = 23, /* Right Analog Up */
+			//RightThumbDown = 22, /* Right Analog Down */
+			//RightThumbLeft = 21, /* Right Analog Left */
+			//RightThumbRight = 20, /* Right Analog Right */
 
 			LAST,
 		}
@@ -466,7 +474,22 @@ namespace BizHawk.Emulation.Cores.Libretro
 		public abstract void LibretroBridge_GetAudio(IntPtr cbHandler, ref int numSamples, short[] sampleBuf);
 
 		[BizImport(cc)]
-		public abstract void LibretroBridge_SetInput(IntPtr cbHandler, LibretroApi.RETRO_DEVICE device, int port, short[] input);
+		public abstract void LibretroBridge_SetInput(IntPtr cbHandler, LibretroApi.RETRO_DEVICE device, int index, int port, short[] input);
+
+		[BizImport(cc)]
+		public abstract uint LibretroBridge_GetNumMemDescs();
+
+		[BizImport(cc)]
+		public abstract IntPtr LibretroBridge_GetMemDescPtr(uint id);
+
+		[BizImport(cc)]
+		public abstract ulong LibretroBridge_GetMemDescSize(uint id);
+
+		[BizImport(cc)]
+		public abstract IntPtr LibretroBridge_GetMemDescName(uint id);
+
+		[BizImport(cc)]
+		public abstract bool LibretroBridge_IsMdescBigEndian(uint id);
 
 		public struct retro_procs
 		{

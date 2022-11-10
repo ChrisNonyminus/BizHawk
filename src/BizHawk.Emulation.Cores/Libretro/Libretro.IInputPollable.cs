@@ -21,27 +21,42 @@ namespace BizHawk.Emulation.Cores.Libretro
 			{
 				input[i] = retro_input_state(controller, 0, (uint)LibretroApi.RETRO_DEVICE.JOYPAD, 0, i);
 			}
-			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.JOYPAD, 0, input);
+			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.JOYPAD, 0, 0, input);
 			// joypad port 1
 			for (uint i = 0; i < input.Length; i++)
 			{
-				input[i] = retro_input_state(controller, 0, (uint)LibretroApi.RETRO_DEVICE.JOYPAD, 1, i);
+				input[i] = retro_input_state(controller, 1, (uint)LibretroApi.RETRO_DEVICE.JOYPAD, 0, i);
 			}
-			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.JOYPAD, 1, input);
+			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.JOYPAD, 0, 1, input);
 			input = new short[(int)LibretroApi.RETRO_DEVICE_ID_POINTER.LAST];
 			// pointer port 0
 			for (uint i = 0; i < input.Length; i++)
 			{
 				input[i] = retro_input_state(controller, 0, (uint)LibretroApi.RETRO_DEVICE.POINTER, 0, i);
 			}
-			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.POINTER, 0, input);
+			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.POINTER, 0, 0, input);
 			input = new short[(int)LibretroApi.RETRO_KEY.LAST];
 			// keyboard port 0
 			for (uint i = 0; i < input.Length; i++)
 			{
 				input[i] = retro_input_state(controller, 0, (uint)LibretroApi.RETRO_DEVICE.KEYBOARD, 0, i);
 			}
-			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.KEYBOARD, 0, input);
+			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.KEYBOARD, 0, 0, input);
+			input = new short[(int)LibretroApi.RETRO_DEVICE_ID_ANALOG.LAST];
+			// left thumbstick port 0
+			for (uint i = 0; i < input.Length; i++)
+			{
+				input[i] = retro_input_state(controller, 0, (uint)LibretroApi.RETRO_DEVICE.ANALOG, 0, i);
+			}
+			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.ANALOG, 0, 0, input);
+			input = new short[(int)LibretroApi.RETRO_DEVICE_ID_ANALOG.LAST];
+			// right thumbstick port 0
+			for (uint i = 0; i < input.Length; i++)
+			{
+				input[i] = retro_input_state(controller, 0, (uint)LibretroApi.RETRO_DEVICE.ANALOG, 1, i);
+			}
+			bridge.LibretroBridge_SetInput(cbHandler, LibretroApi.RETRO_DEVICE.ANALOG, 1, 0, input);
+
 		}
 
 		//meanings (they are kind of hazy, but once we're done implementing this it will be completely defined by example)
@@ -228,10 +243,26 @@ namespace BizHawk.Emulation.Cores.Libretro
 							LibretroApi.RETRO_DEVICE_ID_JOYPAD.R => "R",
 							LibretroApi.RETRO_DEVICE_ID_JOYPAD.SELECT => "Select",
 							LibretroApi.RETRO_DEVICE_ID_JOYPAD.START => "Start",
+							LibretroApi.RETRO_DEVICE_ID_JOYPAD.L2 => "L2",
+							LibretroApi.RETRO_DEVICE_ID_JOYPAD.R2 => "R2",
+							LibretroApi.RETRO_DEVICE_ID_JOYPAD.L3 => "L3",
+							LibretroApi.RETRO_DEVICE_ID_JOYPAD.R3 => "R3",
 							_ => "",
 						};
 
 						return (short)(GetButton(controller, port + 1, "RetroPad", button) ? 1 : 0);
+
+					}
+				case LibretroApi.RETRO_DEVICE.ANALOG:
+					{
+						string axis = (LibretroApi.RETRO_DEVICE_ID_ANALOG)id switch
+						{
+							LibretroApi.RETRO_DEVICE_ID_ANALOG.X => "X",
+							LibretroApi.RETRO_DEVICE_ID_ANALOG.Y => "Y",
+							_ => "",
+						};
+						string key = $"P{port + 1} RetroPad {(index == 0 ? "L" : "R")}Stick {axis}";
+						return (short)controller.AxisValue(key);
 					}
 				default:
 					return 0;
