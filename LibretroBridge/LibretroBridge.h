@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <climits>
+#include <map>
 
 typedef std::int8_t s8;
 typedef std::int16_t s16;

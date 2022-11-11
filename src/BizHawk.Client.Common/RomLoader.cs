@@ -15,6 +15,7 @@ using BizHawk.Emulation.Cores.Nintendo.SNES;
 using BizHawk.Emulation.Cores.Sony.PSX;
 using BizHawk.Emulation.Cores.Arcades.MAME;
 using BizHawk.Emulation.DiscSystem;
+using Newtonsoft.Json;
 
 namespace BizHawk.Client.Common
 {
@@ -615,7 +616,7 @@ namespace BizHawk.Client.Common
 					// must be done before LoadNoGame (which triggers retro_init and the paths to be consumed by the core)
 					// game name == name of core
 					Game = game = new GameInfo { Name = Path.GetFileNameWithoutExtension(launchLibretroCore), System = VSystemID.Raw.Libretro };
-					var retro = new LibretroEmulator(nextComm, game, launchLibretroCore);
+					var retro = new LibretroEmulator(nextComm, game, launchLibretroCore, false, _config.GetCoreSettings<LibretroEmulator, LibretroEmulator.Settings>());
 					nextEmulator = retro;
 
 					if (retro.Description.SupportsNoGame && string.IsNullOrEmpty(path))

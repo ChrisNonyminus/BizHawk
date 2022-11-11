@@ -119,6 +119,39 @@ public:
 		return memory_map->descriptors[id].flags & RETRO_MEMDESC_BIGENDIAN;
 	}
 
+	const char* GetVariableKey(u32 id) {
+		return variableKeys.get()[id].c_str();
+	} 
+
+	u32 GetVariableCount() {
+		return variableCount;
+	} 
+
+	const char* GetVariableValue(std::string key)
+	{
+		printf("variable[\"%s\"] = \"%s\"\n", key.c_str(), variables[key].c_str());
+		return variables[key].c_str();
+	}
+
+	const char* GetVariableComment(std::string key)
+	{
+		u32 index = 0;
+		for (;;) {
+			if (index >= variableCount)
+				return "";
+			if (variableKeys.get()[index] == key) {
+				break;
+			}
+			index++;
+		}
+		return variableComments.get()[index].c_str();
+	}
+
+	void SetVariableValue(std::string key, std::string val)
+	{
+		variables[key] = val;
+	}
+
 	boolean RetroEnvironment(u32 cmd, void* data) {
 		switch (static_cast<RETRO_ENVIRONMENT>(cmd)) {
 			case RETRO_ENVIRONMENT::SET_ROTATION:
@@ -179,12 +212,14 @@ public:
 				retro_variable* req = static_cast<retro_variable*>(data);
 				req->value = nullptr;
 
-				for (u32 i = 0; i < variableCount; i++) {
-					if (variableKeys[i] == std::string(req->key)) {
-						req->value = variables[i].c_str();
-						return true;
-					}
-				}
+				// for (u32 i = 0; i < variableCount; i++) {
+				// 	if (variableKeys[i] == std::string(req->key)) {
+				// 		req->value = variables[i].c_str();
+				// 		return true;
+				// 	}
+				// }
+				auto key = std::string(req->key);
+				req->value = variables[key].c_str();
 
 				return true;
 			}
@@ -198,26 +233,31 @@ public:
 					nVars++;
 				}
 
-				variableCount = nVars;
-				variables.reset(new std::string[nVars]);
-				variableKeys.reset(new std::string[nVars]);
-				variableComments.reset(new std::string[nVars]);
-				var = static_cast<const retro_variable*>(data);
+				if (true) {
+					variableCount = nVars;
+					variableKeys.reset(new std::string[nVars]);
+					variableComments.reset(new std::string[nVars]);
+					var = static_cast<const retro_variable*>(data);
 
-				for (u32 i = 0; i < nVars; i++) {
-					variableKeys[i] = std::string(var[i].key);
-					variableComments[i] = std::string(var[i].value);
+					for (u32 i = 0; i < nVars; i++) {
+						variableKeys[i] = std::string(var[i].key);
+						variableComments[i] = std::string(var[i].value);
 
-					//analyze to find default and save it
-					std::string comment = variableComments[i];
-					std::size_t ofs = comment.find_first_of(';') + 2;
-					std::size_t pipe = comment.find('|', ofs);
-					if (pipe == std::string::npos) {
-						variables[i] = comment.substr(ofs);
-					} else {
-						variables[i] = comment.substr(ofs, pipe - ofs);
+						//analyze to find default and save it
+						std::string comment = variableComments[i];
+						std::size_t ofs = comment.find_first_of(';') + 2;
+						std::size_t pipe = comment.find('|', ofs);
+						if (!variables.count(var[i].key)) {
+							if (pipe == std::string::npos) {
+								variables[var[i].key] = comment.substr(ofs);
+							} else {
+								variables[var[i].key] = comment.substr(ofs, pipe - ofs);
+							}
+						}
 					}
 				}
+
+				
 
 				return true;
 			}
@@ -620,10 +660,10 @@ private:
 	retro_system_timing timingInfo;
 
 	bool variablesDirty;
-	u32 variableCount;
+	u32 variableCount = 0;
 	std::unique_ptr<std::string[]> variableKeys;
 	std::unique_ptr<std::string[]> variableComments;
-	std::unique_ptr<std::string[]> variables;
+	std::map<std::string, std::string> variables;
 
 	std::string systemDirectory;
 	std::string saveDirectory;
@@ -689,6 +729,26 @@ EXPORT const char* LibretroBridge_GetMemDescName(u32 id) {
 
 EXPORT bool LibretroBridge_IsMdescBigEndian(u32 id) {
 	return gCbHandler->IsMemoryDescBigEndian(id);
+}
+
+EXPORT const char* LibretroBridge_GetVariableKey(u32 id) {
+	return gCbHandler->GetVariableKey(id);
+}
+
+EXPORT u32 LibretroBridge_GetVariableCount() {
+	return gCbHandler->GetVariableCount();
+}
+
+EXPORT const char* LibretroBridge_GetVariableValue(const char* key) {
+	return gCbHandler->GetVariableValue(std::string(key));
+}
+
+EXPORT const char* LibretroBridge_GetVariableComment(const char* key) {
+	return gCbHandler->GetVariableComment(std::string(key));
+}
+
+EXPORT void LibretroBridge_SetVariableValue(const char* key, const char* value) {
+	gCbHandler->SetVariableValue(std::string(key), std::string(value));
 }
 
 // set a "global" callback handler

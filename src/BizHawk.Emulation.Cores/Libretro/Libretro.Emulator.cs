@@ -42,7 +42,7 @@ namespace BizHawk.Emulation.Cores.Libretro
 			bridge.LibretroBridge_SetGlobalCallbackHandler(cbHandler);
 		}
 
-		public LibretroEmulator(CoreComm comm, IGameInfo game, string corePath, bool analysis = false)
+		public LibretroEmulator(CoreComm comm, IGameInfo game, string corePath, bool analysis = false, Settings settings = null)
 		{
 			try
 			{
@@ -52,6 +52,8 @@ namespace BizHawk.Emulation.Cores.Libretro
 				{
 					throw new Exception("Failed to create callback handler!");
 				}
+				_settings = settings ?? new Settings();
+				_syncSettings = new SyncSettings();
 
 				UpdateCallbackHandler();
 
@@ -190,6 +192,14 @@ namespace BizHawk.Emulation.Cores.Libretro
 				}
 			}
 
+			if (_settings.CoreOptions.ContainsKey(Description.LibraryName))
+			{
+				foreach (var opt in _settings.CoreOptions[Description.LibraryName])
+				{
+					bridge.LibretroBridge_SetVariableValue(RetroString(opt.Key), RetroString(opt.Value));
+				}
+			}
+
 			api.retro_init();
 			bool success = api.retro_load_game(gameptr);
 			if (!success)
@@ -211,6 +221,7 @@ namespace BizHawk.Emulation.Cores.Libretro
 			_stateBuf = new byte[_stateLen = api.retro_serialize_size()];
 
 			_region = api.retro_get_region();
+			
 
 			//this stuff can only happen after the game is loaded
 
@@ -226,6 +237,20 @@ namespace BizHawk.Emulation.Cores.Libretro
 			InitMemoryDomains(); // im going to assume this should happen when a game is loaded
 
 			inited = true;
+			var keys = new List<string>();
+			var count = bridge.LibretroBridge_GetVariableCount();
+			for (uint i = 0; i < count; i++)
+			{
+				keys.Add(Marshal.PtrToStringAnsi(bridge.LibretroBridge_GetVariableKey(i)));
+			}
+			if (!_settings.CoreOptions.ContainsKey(Description.LibraryName))
+			{
+				_settings.CoreOptions[Description.LibraryName] = new Dictionary<string, string>();
+			}
+			foreach (var key in keys)
+			{
+				_settings.CoreOptions[Description.LibraryName][key] = Marshal.PtrToStringAnsi(bridge.LibretroBridge_GetVariableValue(RetroString(key)));
+			}
 
 			return true;
 		}

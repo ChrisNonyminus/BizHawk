@@ -490,6 +490,16 @@ namespace BizHawk.Emulation.Cores.Libretro
 
 		[BizImport(cc)]
 		public abstract bool LibretroBridge_IsMdescBigEndian(uint id);
+		[BizImport(cc)]
+		public abstract IntPtr LibretroBridge_GetVariableValue(byte[] key);
+		[BizImport(cc)]
+		public abstract IntPtr LibretroBridge_GetVariableComment(byte[] key);
+		[BizImport(cc)]
+		public abstract void LibretroBridge_SetVariableValue(byte[] key, byte[] value);
+		[BizImport(cc)]
+		public abstract IntPtr LibretroBridge_GetVariableKey(uint id);
+		[BizImport(cc)]
+		public abstract uint LibretroBridge_GetVariableCount();
 
 		public struct retro_procs
 		{
