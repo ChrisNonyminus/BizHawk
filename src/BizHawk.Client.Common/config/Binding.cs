@@ -12,7 +12,7 @@ namespace BizHawk.Client.Common
 
 		public static readonly IReadOnlyList<string> Groupings;
 
-		static HotkeyInfo()
+		static HotkeyInfo() //RTC_Hijack - Remove some of the more annoying default binds that don't line up with bizhawk usage
 		{
 			var dict = new Dictionary<string, HotkeyInfo>();
 			var i = 0;
@@ -24,7 +24,7 @@ namespace BizHawk.Client.Common
 				=> dict.Add($"{tabGroup}__{displayName}".Replace(" ", ""), new(tabGroup: tabGroup, i++, displayName: displayName, toolTip: toolTip, defaultBinding: defaultBinding));
 #endif
 
-			Bind("General", "Frame Advance", "F");
+			Bind("General", "Frame Advance"); //RTC - Remove default binds
 			Bind("General", "Rewind", "Shift+R");
 			Bind("General", "Pause", "Pause");
 			Bind("General", "Fast Forward", "Tab");
@@ -53,14 +53,14 @@ namespace BizHawk.Client.Common
 			Bind("General", "Stop A/V");
 			Bind("General", "Larger Window", "Alt+Up");
 			Bind("General", "Smaller Window", "Alt+Down");
-			Bind("General", "Increase Speed", "Equals");
-			Bind("General", "Decrease Speed", "Minus");
+			Bind("General", "Increase Speed"); //RTC - Remove default binds
+			Bind("General", "Decrease Speed"); //RTC - Remove default binds
 			Bind("General", "Reset Speed", "Shift+Equals");
 			Bind("General", "Reboot Core", "Ctrl+R");
 			Bind("General", "Toggle Sound");
 			Bind("General", "Exit Program");
-			Bind("General", "Screen Raw to Clipboard", "Ctrl+C");
-			Bind("General", "Screen Client to Clipboard", "Ctrl+Shift+C");
+			Bind("General", "Screen Raw to Clipboard"); //RTC - Remove default binds
+			Bind("General", "Screen Client to Clipboard"); //RTC - Remove default binds
 			Bind("General", "Toggle Skip Lag Frame");
 			Bind("General", "Toggle Key Priority");
 			Bind("General", "Frame Inch");
@@ -95,14 +95,14 @@ namespace BizHawk.Client.Common
 			Bind("Save States", "Select State 8", "Number8");
 			Bind("Save States", "Select State 9", "Number9");
 			Bind("Save States", "Select State 0", "Number0");
-			Bind("Save States", "Quick Load", "P");
-			Bind("Save States", "Quick Save", "I");
+			Bind("Save States", "Quick Load"); //RTC - Remove default binds
+			Bind("Save States", "Quick Save"); //RTC - Remove default binds
 			Bind("Save States", "Save Named State");
 			Bind("Save States", "Load Named State");
 			Bind("Save States", "Previous Slot");
 			Bind("Save States", "Next Slot");
 
-			Bind("Movie", "Toggle read-only", "Q");
+			Bind("Movie", "Toggle read-only"); //RTC - Remove default binds
 			Bind("Movie", "Play Movie");
 			Bind("Movie", "Record Movie");
 			Bind("Movie", "Stop Movie");
@@ -116,7 +116,7 @@ namespace BizHawk.Client.Common
 			Bind("Tools", "Lua Console");
 			Bind("Tools", "Cheats");
 			Bind("Tools", "TAStudio");
-			Bind("Tools", "ToolBox", "Shift+T");
+			Bind("Tools", "ToolBox"); //RTC - Remove default binds
 			Bind("Tools", "Virtual Pad");
 
 			Bind("RAM Search", "New Search");
@@ -126,28 +126,28 @@ namespace BizHawk.Client.Common
 			Bind("RAM Search", "Previous Operator");
 			Bind("RAM Search", "Next Operator");
 
-			Bind("TAStudio", "Add Branch", "Alt+Insert");
-			Bind("TAStudio", "Delete Branch", "Alt+Delete");
+			Bind("TAStudio", "Add Branch"); //RTC - Remove default binds
+			Bind("TAStudio", "Delete Branch"); //RTC - Remove default binds
 			Bind("TAStudio", "Show Cursor");
 			Bind("TAStudio", "Toggle Follow Cursor", "Shift+F");
 			Bind("TAStudio", "Toggle Auto-Restore", "Shift+R");
 			Bind("TAStudio", "Toggle Turbo Seek", "Shift+S");
-			Bind("TAStudio", "Undo", "Ctrl+Z"); // TODO: these are getting not unique enough
-			Bind("TAStudio", "Redo", "Ctrl+Y");
+			Bind("TAStudio", "Undo"); //RTC - Remove default binds
+			Bind("TAStudio", "Redo"); //RTC - Remove default binds
 			Bind("TAStudio", "Sel. bet. Markers", "Ctrl+A");
 			Bind("TAStudio", "Select All", "Ctrl+Shift+A");
 			Bind("TAStudio", "Reselect Clip.", "Ctrl+B");
-			Bind("TAStudio", "Clear Frames", "Delete");
+			Bind("TAStudio", "Clear Frames"); //RTC - Remove default binds
 			Bind("TAStudio", "Insert Frame", "Insert");
 			Bind("TAStudio", "Insert # Frames", "Ctrl+Shift+Insert");
 			Bind("TAStudio", "Delete Frames", "Ctrl+Delete");
 			Bind("TAStudio", "Clone Frames", "Ctrl+Insert");
-			Bind("TAStudio", "Analog Increment", "Up");
-			Bind("TAStudio", "Analog Decrement", "Down");
+			Bind("TAStudio", "Analog Increment"); //RTC - Remove default binds
+			Bind("TAStudio", "Analog Decrement"); //RTC - Remove default binds
 			Bind("TAStudio", "Analog Incr. by 10", "Shift+Up");
 			Bind("TAStudio", "Analog Decr. by 10", "Shift+Down");
-			Bind("TAStudio", "Analog Maximum", "Right");
-			Bind("TAStudio", "Analog Minimum", "Left");
+			Bind("TAStudio", "Analog Maximum"); //RTC - Remove default binds
+			Bind("TAStudio", "Analog Minimum"); //RTC - Remove default binds
 
 			Bind("SNES", "Toggle BG 1");
 			Bind("SNES", "Toggle BG 2");

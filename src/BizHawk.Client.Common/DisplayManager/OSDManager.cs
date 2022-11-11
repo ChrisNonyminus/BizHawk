@@ -91,10 +91,16 @@ namespace BizHawk.Client.Common
 		private readonly List<UIDisplay> _ramWatchList = new List<UIDisplay>();
 
 		public void AddMessage(string message, int? duration = null)
-			=> _messages.Add(new() {
+		{
+			//RTC_HIJACK : Disable OSD Messages (Add this block)
+			if ((bool?)(RTCV.NetCore.AllSpec.CorruptCoreSpec?[RTCV.CorruptCore.RTCSPEC.CORE_EMULATOROSDDISABLED.ToString()]) ?? false)
+				return;
+			//--------------------------------
+			_messages.Add(new() {
 				Message = message,
 				ExpireAt = DateTime.Now + TimeSpan.FromSeconds(duration ?? _config.OSDMessageDuration),
 			});
+		}
 
 		public void ClearRamWatches()
 		{

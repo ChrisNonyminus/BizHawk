@@ -33,6 +33,8 @@ namespace BizHawk.Client.EmuHawk
 
 		public override void Restart()
 		{
+			//RTC_HIJACK : Kill toolbox
+			if (Convert.ToBoolean(true)) return;
 			SetTools();
 			SetSize();
 
@@ -42,6 +44,8 @@ namespace BizHawk.Client.EmuHawk
 
 		private void SetTools()
 		{
+			//RTC_HIJACK : Kill toolbox
+			if (Convert.ToBoolean(true)) return;
 			ToolBoxStrip.Items.Clear();
 
 			var tools = EmuHawk.ReflectionCache.Types

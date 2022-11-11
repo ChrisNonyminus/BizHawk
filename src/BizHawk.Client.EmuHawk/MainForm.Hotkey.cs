@@ -90,6 +90,9 @@ namespace BizHawk.Client.EmuHawk
 					break;
 				case "Close ROM":
 					CloseRom();
+					//RTC_HIJACK : Disable normal CloseRom and replace with RTC CloseRom
+					//CloseRom();
+					RTCV.BizhawkVanguard.Hooks.CLOSE_GAME(true);
 					break;
 				case "Load Last ROM":
 					LoadMostRecentROM();

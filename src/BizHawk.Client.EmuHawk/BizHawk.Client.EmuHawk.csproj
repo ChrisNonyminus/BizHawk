@@ -22,6 +22,9 @@
 	<ItemGroup>
 		<ProjectReference Include="$(ProjectDir)../BizHawk.Bizware.DirectX/BizHawk.Bizware.DirectX.csproj" />
 		<ProjectReference Include="$(ProjectDir)../BizHawk.WinForms.Controls/BizHawk.WinForms.Controls.csproj" />
+		<ProjectReference Include="..\..\..\RTCV\Source\Libraries\Common\Common.csproj" />
+		<ProjectReference Include="..\..\..\RTCV\Source\Libraries\CorruptCore\CorruptCore.csproj" />
+		<ProjectReference Include="..\..\..\RTCV\Source\Libraries\Vanguard\Vanguard.csproj" />
 		<Compile Remove="Properties/Settings.Designer.cs" />
 		<Content Include="images/logo.ico" />
 		<EmbeddedResource Include="images/**/*" />

@@ -33,12 +33,16 @@ namespace BizHawk.Client.EmuHawk
 			InitializeComponent();
 			Icon = Properties.Resources.CommandWindow;
 			AddToGameDbBtn.Image = Properties.Resources.Add;
+			//RTC_HIJACK - Nuke bizhawk's console as we spawn our own
+			/*
 			Closing += (o, e) =>
 			{
 				Detach();
 			};
 			ListView_ClientSizeChanged(null, null);
 			Attach();
+			*/
+			RTCV.BizhawkVanguard.Hooks.SHOW_CONSOLE(true);
 		}
 
 		private void Attach()

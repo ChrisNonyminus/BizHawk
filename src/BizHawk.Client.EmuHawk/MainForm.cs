@@ -167,7 +167,8 @@ namespace BizHawk.Client.EmuHawk
 			HandleToggleLightAndLink();
 			SetStatusBar();
 			_stateSlots.Update(Emulator, MovieSession.Movie, SaveStatePrefix());
-
+//RTC_HIJACK : disable version check
+			/*
 			// New version notification
 			UpdateChecker.CheckComplete += (s2, e2) =>
 			{
@@ -180,7 +181,7 @@ namespace BizHawk.Client.EmuHawk
 			};
 			UpdateChecker.GlobalConfig = Config;
 			UpdateChecker.BeginCheck(); // Won't actually check unless enabled by user
-
+*/
 			// open requested ext. tool
 			var requestedExtToolDll = _argParser.openExtToolDll;
 			if (requestedExtToolDll != null)
@@ -197,6 +198,10 @@ namespace BizHawk.Client.EmuHawk
 #if DEBUG
 			AddDebugMenu();
 #endif
+			//RTC_HIJACK : Hook at Mainform MainForm_load()
+			RTCV.BizhawkVanguard.Hooks.MAINFORM_FORM_LOAD_END();
+
+
 		}
 
 		static MainForm()
@@ -564,7 +569,8 @@ namespace BizHawk.Client.EmuHawk
 			}
 
 			if (Config.MainFormStayOnTop) TopMost = true;
-
+//RTC_Hijack - Don't load anything automatically
+			/*
 			if (_argParser.cmdRom != null)
 			{
 				// Commandline should always override auto-load
@@ -580,6 +586,7 @@ namespace BizHawk.Client.EmuHawk
 			{
 				LoadMostRecentROM();
 			}
+			*/
 
 			if (_argParser.audiosync.HasValue)
 			{
@@ -993,7 +1000,8 @@ namespace BizHawk.Client.EmuHawk
 
 		private readonly Action<Sound> _updateGlobalSound;
 
-		private Sound Sound
+		//RTC_Hijack Make sound public
+		public Sound Sound
 		{
 			get => _sound;
 			set => _updateGlobalSound(_sound = value);
@@ -1293,7 +1301,8 @@ namespace BizHawk.Client.EmuHawk
 //				Util.DebugWriteLine($"  Selecting display size {lastComputedSize}");
 
 				// Change size
-				Size = new Size(lastComputedSize.Width + borderWidth, lastComputedSize.Height + borderHeight);
+				//RTC_HIJACK : Don't change the MainForm Size
+				//Size = new Size(lastComputedSize.Width + borderWidth, lastComputedSize.Height + borderHeight);
 				PerformLayout();
 				_presentationPanel.Resized = true;
 
@@ -2483,7 +2492,8 @@ namespace BizHawk.Client.EmuHawk
 		public SettingsAdapter GetSettingsAdapterForLoadedCoreUntyped()
 			=> new(Emulator, static () => true, HandlePutCoreSettings, MayPutCoreSyncSettings, HandlePutCoreSyncSettings);
 
-		private void SaveConfig(string path = "")
+		//RTC_HIJACK : Make SaveConfig public
+		public void SaveConfig(string path = "")
 		{
 			if (Config.SaveWindowPosition)
 			{
@@ -3077,6 +3087,9 @@ namespace BizHawk.Client.EmuHawk
 
 				CheatList.Pulse();
 
+				//RTC_Hijack - Step for frame 0. Note the true on the end. We handle doing nothing for any step after the first one in the method itself
+				RTCV.BizhawkVanguard.Hooks.CPU_STEP(isRewinding, isFastForwarding, true);
+
 				// zero 03-may-2014 - moved this before call to UpdateToolsBefore(), since it seems to clear the state which a lua event.framestart is going to want to alter
 				InputManager.ClickyVirtualPadController.FrameTick();
 				InputManager.ButtonOverrideAdapter.FrameTick();
@@ -3161,6 +3174,10 @@ namespace BizHawk.Client.EmuHawk
 				InputManager.AutofireStickyXorAdapter.IncrementLoops(Emulator.CanPollInput() && Emulator.AsInputPollable().IsLagFrame);
 
 				PressFrameAdvance = false;
+
+				//RTC_HIJACK : Hooking the step here as it's just before the tools update
+				RTCV.BizhawkVanguard.Hooks.CPU_STEP(isRewinding, isFastForwarding);
+				//---------------------------------------
 
 				// Update tools, but not if we're at the end of a turbo seek. In that case, updating will happen later when the seek is ended.
 				if (!(IsTurboSeeking && Emulator.Frame == PauseOnFrame.Value))
@@ -3279,7 +3296,8 @@ namespace BizHawk.Client.EmuHawk
 		/// </summary>
 		/// <param name="videoWriterName">match the short name of an <see cref="IVideoWriter"/></param>
 		/// <param name="filename">filename to save to</param>
-		private void RecordAv(string videoWriterName, string filename)
+		//RTC_HIJACK : make RecordAvBase() method public
+		public void RecordAv(string videoWriterName, string filename)
 		{
 			RecordAvBase(videoWriterName, filename, true);
 		}
@@ -3295,7 +3313,8 @@ namespace BizHawk.Client.EmuHawk
 		/// <summary>
 		/// start AV recording
 		/// </summary>
-		private void RecordAvBase(string videoWriterName, string filename, bool unattended)
+		//RTC_Hijack : Make RecordAvBase public
+		public void RecordAvBase(string videoWriterName, string filename, bool unattended)
 		{
 			if (_currAviWriter != null) return;
 
@@ -3485,7 +3504,8 @@ namespace BizHawk.Client.EmuHawk
 			RewireSound();
 		}
 
-		private void StopAv()
+		//RTC_HIJACK : make StopAv() method public
+		public void StopAv()
 		{
 			if (_currAviWriter == null)
 			{
@@ -3699,7 +3719,12 @@ namespace BizHawk.Client.EmuHawk
 			if (args.OpenAdvanced is OpenAdvanced_OpenRom)
 			{
 				var leftPart = path.Split('|')[0];
-				Config.PathEntries.LastRomPath = Path.GetFullPath(Path.GetDirectoryName(leftPart) ?? "");
+				//RTC_Hijack - Don't set this if it's an RTC dir
+				string fullPath = Path.GetFullPath(Path.GetDirectoryName(leftPart));
+				if (!fullPath.Contains("\\WORKING") && !fullPath.Contains("\\ASSETS"))
+				{
+					Config.PathEntries.LastRomPath = Path.GetFullPath(Path.GetDirectoryName(leftPart) ?? "");
+				}//---Hijack_End
 			}
 
 			return true;
@@ -3714,6 +3739,9 @@ namespace BizHawk.Client.EmuHawk
 			if (args == null)
 				throw new ArgumentNullException(nameof(args));
 
+			//RTC_HIJACK : Hook at beginning of LoadRom
+			RTCV.BizhawkVanguard.Hooks.LOAD_GAME_BEGIN();
+			//----------
 			_isLoadingRom = true;
 			path = EmuHawkUtil.ResolveShortcut(path);
 
@@ -3899,6 +3927,14 @@ namespace BizHawk.Client.EmuHawk
 					Config.RecentRoms.Add(openAdvancedArgs);
 					JumpLists.AddRecentItem(openAdvancedArgs, ioa.DisplayName);
 
+					//RTC_Hijack ignoring default.nes for Recent Menu
+					if (!(loader.CanonicalFullPath.Contains("\\ASSETS\\") || loader.CanonicalFullPath.Contains("\\TEMP\\") ||
+						  loader.CanonicalFullPath.Contains("\\SKS\\") || loader.CanonicalFullPath.Contains("\\SSK\\") || loader.CanonicalFullPath.Contains("\\MP\\")))
+					{
+						Config.RecentRoms.Add(openAdvancedArgs);
+						JumpLists.AddRecentItem(openAdvancedArgs, ioa.DisplayName);
+					}//----------------------
+
 					// Don't load Save Ram if a movie is being loaded
 					if (!MovieSession.NewMovieQueued)
 					{
@@ -3957,6 +3993,10 @@ namespace BizHawk.Client.EmuHawk
 					ExtToolManager.BuildToolStrip();
 
 					EmuClient.OnRomLoaded();
+
+					//RTC_HIJACK : Hook at the end of LoadRom
+					RTCV.BizhawkVanguard.Hooks.LOAD_GAME_DONE();
+					//----------
 					return true;
 				}
 				else if (Emulator.IsNull())
@@ -3965,12 +4005,20 @@ namespace BizHawk.Client.EmuHawk
 					Tools.Restart(Config, Emulator, Game);
 					ExtToolManager.BuildToolStrip();
 					OnRomChanged();
+
+					//RTC_HIJACK : Hook at LoadRom failure
+					RTCV.BizhawkVanguard.Hooks.LOAD_GAME_FAILED();
+					//----------
 					return false;
 				}
 				else
 				{
 					// The ROM has been loaded by a recursive invocation of the LoadROM method.
 					EmuClient.OnRomLoaded();
+
+					//RTC_HIJACK : Hook at the end of LoadRom
+					RTCV.BizhawkVanguard.Hooks.LOAD_GAME_DONE();
+					//----------
 					return true;
 				}
 			}
@@ -4067,6 +4115,9 @@ namespace BizHawk.Client.EmuHawk
 			RewireSound();
 			RebootStatusBarIcon.Visible = false;
 			GameIsClosing = false;
+
+			// RTC_HIJACK : Hook after CloseGame
+			RTCV.BizhawkVanguard.Hooks.CLOSE_GAME();
 		}
 
 		private void AutoSaveStateIfConfigured()
@@ -4195,6 +4246,10 @@ namespace BizHawk.Client.EmuHawk
 				return;
 			}
 
+			//RTC_HIJACK Hook at beginning of Load Savestate
+			RTCV.BizhawkVanguard.Hooks.LOAD_SAVESTATE_BEGIN();
+			//-----------
+
 			if (new SavestateFile(Emulator, MovieSession, QuickBmpFile, MovieSession.UserBag).Load(path, this))
 			{
 				OSD.ClearGuiText();
@@ -4227,6 +4282,10 @@ namespace BizHawk.Client.EmuHawk
 			{
 				AddOnScreenMessage("Loadstate error!");
 			}
+
+						//RTC_HIJACK : Hook at the end of Load SaveState
+			RTCV.BizhawkVanguard.Hooks.LOAD_SAVESTATE_END();
+			//-----------
 		}
 
 		public void LoadQuickSave(string quickSlotName, bool suppressOSD = false)
@@ -4874,5 +4933,23 @@ namespace BizHawk.Client.EmuHawk
 		}
 
 		public IQuickBmpFile QuickBmpFile { get; } = EmuHawk.QuickBmpFile.INSTANCE;
+
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+			//RTC_HIJACK : MainForm_ResizeEnd
+
+			//This event function might not exist if the bizhawk gets updated.
+			//Just do recreate the ResizeEnd Event and bind the hook to it.
+			RTCV.BizhawkVanguard.Hooks.MAINFORM_RESIZEEND();
+			//------------
+		}
+
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			//RTC_HIJACK : MainForm_FormClosing
+			//You might have to recreate
+			RTCV.BizhawkVanguard.Hooks.MAINFORM_CLOSING();
+			//---------------------
+		}
 	}
 }

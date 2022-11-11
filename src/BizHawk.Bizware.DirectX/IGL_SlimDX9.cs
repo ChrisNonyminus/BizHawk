@@ -923,7 +923,15 @@ namespace BizHawk.Bizware.DirectX
 				PresentationInterval = control.Vsync ? PresentInterval.One : PresentInterval.Immediate
 			};
 
-			control.SwapChain = new SwapChain(Dev, pp);
+			//RTC_Hijack - eat this exception
+			try
+			{
+				control.SwapChain = new SwapChain(Dev, pp);
+			}
+			catch (Exception e)
+			{
+				_ = e;
+			}
 		}
 
 		public IGraphicsControl Internal_CreateGraphicsControl()

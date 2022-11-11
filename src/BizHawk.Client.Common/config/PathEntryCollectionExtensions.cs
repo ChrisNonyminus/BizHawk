@@ -213,10 +213,13 @@ namespace BizHawk.Client.Common
 		public static string SaveRamAbsolutePath(this PathEntryCollection collection, IGameInfo game, IMovie movie)
 		{
 			var name = game.FilesystemSafeName();
+			//RTC_Hijack : Don't use moviesession prefix
+			/*
 			if (movie.IsActive())
 			{
 				name += $".{Path.GetFileNameWithoutExtension(movie.Filename)}";
 			}
+			*/
 
 			var pathEntry = collection[game.System, "Save RAM"]
 				?? collection[game.System, "Base"];

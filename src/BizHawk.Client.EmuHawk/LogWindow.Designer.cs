@@ -30,6 +30,7 @@ namespace BizHawk.Client.EmuHawk
 		/// </summary>
 		private void InitializeComponent()
 		{
+			
 			this.btnClose = new System.Windows.Forms.Button();
 			this.btnClear = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();

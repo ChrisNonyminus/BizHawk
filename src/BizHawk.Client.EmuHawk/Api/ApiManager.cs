@@ -44,6 +44,17 @@ namespace BizHawk.Client.EmuHawk
 			IEmulator emulator,
 			IGameInfo game)
 		{
+			//RTC_Hijack : Fill linker when Api refreshes
+			RTCV.BizhawkVanguard.ClassicLinker.logCallback = logCallback;
+			RTCV.BizhawkVanguard.ClassicLinker.mainForm = mainForm;
+			RTCV.BizhawkVanguard.ClassicLinker.displayManager = displayManager;
+			RTCV.BizhawkVanguard.ClassicLinker.inputManager = inputManager;
+			RTCV.BizhawkVanguard.ClassicLinker.movieSession = movieSession;
+			RTCV.BizhawkVanguard.ClassicLinker.toolManager = toolManager;
+			RTCV.BizhawkVanguard.ClassicLinker.config = config;
+			RTCV.BizhawkVanguard.ClassicLinker.emulator = emulator;
+			RTCV.BizhawkVanguard.ClassicLinker.game = game;
+			
 			var avail = new Dictionary<Type, object>
 			{
 				[typeof(Action<string>)] = logCallback,

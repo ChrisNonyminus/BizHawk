@@ -91,6 +91,7 @@ namespace BizHawk.Client.EmuHawk
 			this.AddressLabel = new BizHawk.WinForms.Controls.LocLabelEx();
 			this.AddressesLabel = new BizHawk.WinForms.Controls.LocLabelEx();
 			this.Header = new BizHawk.WinForms.Controls.LocLabelEx();
+			this.CreateVMDMenuItem = new System.Windows.Forms.ToolStripMenuItem(); //RTC_Hijack
 			this.HexMenuStrip.SuspendLayout();
 			this.ViewerContextMenuStrip.SuspendLayout();
 			this.MemoryViewerBox.SuspendLayout();
@@ -224,7 +225,8 @@ namespace BizHawk.Client.EmuHawk
             this.AddToRamWatchMenuItem,
             this.FreezeAddressMenuItem,
             this.UnfreezeAllMenuItem,
-            this.PokeAddressMenuItem});
+            this.PokeAddressMenuItem,
+			this.CreateVMDMenuItem});//RTC_Hijack Add VMD to menu
 			this.OptionsSubMenu.Text = "&Options";
 			this.OptionsSubMenu.DropDownOpened += new System.EventHandler(this.OptionsSubMenu_DropDownOpened);
 			// 
@@ -316,6 +318,17 @@ namespace BizHawk.Client.EmuHawk
 			// 
 			this.ResetColorsToDefaultMenuItem.Text = "Reset to Default";
 			this.ResetColorsToDefaultMenuItem.Click += new System.EventHandler(this.ResetColorsToDefaultMenuItem_Click);
+
+			//RTC_Hijack
+			//-------------------------------
+			// 
+			// CreateVMDMenuItem
+			// 
+			this.CreateVMDMenuItem.Name = "CreateVMDMenuItem";
+			this.CreateVMDMenuItem.Size = new System.Drawing.Size(269, 22);
+			this.CreateVMDMenuItem.Text = "&Create VMD from Selected Addresses";
+			this.CreateVMDMenuItem.Click += new System.EventHandler(this.CreateVMDFromSelectedMenuItem_Click);
+			//-------------------------------
 			// 
 			// resetToDefaultToolStripMenuItem
 			// 
@@ -330,6 +343,7 @@ namespace BizHawk.Client.EmuHawk
             this.FreezeContextItem,
             this.AddToRamWatchContextItem,
             this.UnfreezeAllContextItem,
+			this.CreateVMDMenuItem,//RTC_HIJACK
             this.PokeContextItem,
             this.ContextSeparator1,
             this.IncrementContextItem,
@@ -514,6 +528,8 @@ namespace BizHawk.Client.EmuHawk
 		private System.Windows.Forms.VScrollBar HexScrollBar;
 		private BizHawk.WinForms.Controls.ToolStripMenuItemEx UnfreezeAllMenuItem;
 		private BizHawk.WinForms.Controls.ToolStripMenuItemEx UnfreezeAllContextItem;
+
+		private System.Windows.Forms.ToolStripMenuItem CreateVMDMenuItem;//RTC_HIJACK
 		private BizHawk.WinForms.Controls.ToolStripSeparatorEx ContextSeparator1;
 		private BizHawk.WinForms.Controls.ToolStripMenuItemEx IncrementContextItem;
 		private BizHawk.WinForms.Controls.ToolStripMenuItemEx DecrementContextItem;

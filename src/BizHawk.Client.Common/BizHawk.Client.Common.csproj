@@ -13,6 +13,8 @@
 		<PackageReference Include="SharpCompress" Version="0.30.1" />
 		<ProjectReference Include="$(ProjectDir)../BizHawk.Emulation.Cores/BizHawk.Emulation.Cores.csproj" />
 		<ProjectReference Include="$(ProjectDir)../BizHawk.Bizware.BizwareGL/BizHawk.Bizware.BizwareGL.csproj" />
+		<ProjectReference Include="..\..\..\RTCV\Source\Libraries\CorruptCore\CorruptCore.csproj" />
+		<ProjectReference Include="..\..\..\RTCV\Source\Libraries\NetCore\NetCore.csproj" />
 		<EmbeddedResource Include="Resources/**/*" />
 	</ItemGroup>
 	<ItemGroup>
